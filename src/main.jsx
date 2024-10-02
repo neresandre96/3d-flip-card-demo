@@ -1,6 +1,6 @@
 import React from 'react';
-import Card3D from './dist/index.modern.js';
-import './dist/card-styles.css';
+import Card3D from './components/index.modern.js';
+import './components/card-styles.css';
 
 const MainContent = () => {
   return (
