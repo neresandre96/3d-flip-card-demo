@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/3d-flip-card-demo/static/css/main.df7e28b5.css",
-    "main.js": "/3d-flip-card-demo/static/js/main.a178f0fe.js",
+    "main.css": "/3d-flip-card-demo/static/css/main.0916a542.css",
+    "main.js": "/3d-flip-card-demo/static/js/main.b2fd44a4.js",
     "static/js/453.1a062668.chunk.js": "/3d-flip-card-demo/static/js/453.1a062668.chunk.js",
     "index.html": "/3d-flip-card-demo/index.html",
-    "main.df7e28b5.css.map": "/3d-flip-card-demo/static/css/main.df7e28b5.css.map",
-    "main.a178f0fe.js.map": "/3d-flip-card-demo/static/js/main.a178f0fe.js.map",
+    "main.0916a542.css.map": "/3d-flip-card-demo/static/css/main.0916a542.css.map",
+    "main.b2fd44a4.js.map": "/3d-flip-card-demo/static/js/main.b2fd44a4.js.map",
     "453.1a062668.chunk.js.map": "/3d-flip-card-demo/static/js/453.1a062668.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.df7e28b5.css",
-    "static/js/main.a178f0fe.js"
+    "static/css/main.0916a542.css",
+    "static/js/main.b2fd44a4.js"
   ]
 }
