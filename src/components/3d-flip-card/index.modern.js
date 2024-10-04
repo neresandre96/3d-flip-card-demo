@@ -43,6 +43,9 @@ var useCardSpin = function useCardSpin(ref, rotationSpeed, draggable, hoverToSto
   var _useState4 = useState(false),
     isFlipped = _useState4[0],
     setIsFlipped = _useState4[1];
+  var _useState5 = useState(false),
+    resetRotation = _useState5[0],
+    setResetRotation = _useState5[1];
   var dragStartData = useRef({
     dragStartRotation: 0,
     dragStartClientX: 0
@@ -63,11 +66,53 @@ var useCardSpin = function useCardSpin(ref, rotationSpeed, draggable, hoverToSto
     };
   }, [isHovered, dragging, rotationSpeed, hoverToStop]);
   useEffect(function () {
-    if (ref.current) {
-      var flipRotation = isFlipped ? 180 : 0;
-      ref.current.style.transform = "rotateY(" + (rotation + flipRotation) + "deg)";
+    if (ref.current && !resetRotation) {
+      ref.current.style.transform = "rotateY(" + rotation + "deg)";
+      if (!dragging && ref.current.style.transition === 'none' && rotation !== 0) {
+        ref.current.style.transition = 'transform 0.6s ease';
+      }
     }
-  }, [rotation, isFlipped, ref]);
+  }, [rotation]);
+  useEffect(function () {
+    if (ref.current) {
+      if (rotation !== 0 && resetRotation) {
+        var closestMultipleOf360 = Math.round(rotation / 360) * 360;
+        ref.current.style.transform = "rotateY(" + closestMultipleOf360 + "deg)";
+        setTimeout(function () {
+          if (ref.current) {
+            ref.current.style.transition = 'none';
+            ref.current.style.transform = 'rotateY(0deg)';
+            setRotation(0);
+            setResetRotation(false);
+          }
+        }, 600);
+      }
+    }
+  });
+  useEffect(function () {
+    if (ref.current && !resetRotation) {
+      setResetRotation(true);
+    }
+  }, [draggable]);
+  var handleFlip = useCallback(function () {
+    setRotation(function (prevRotation) {
+      var newRotation = prevRotation;
+      if (prevRotation === 0) {
+        newRotation = 180;
+        setIsFlipped(false);
+      } else if (prevRotation === 180 && !isFlipped) {
+        newRotation = 360;
+        setIsFlipped(true);
+      } else if (prevRotation === 360) {
+        newRotation = 180;
+        setIsFlipped(true);
+      } else if (prevRotation === 180 && isFlipped) {
+        newRotation = 0;
+        setIsFlipped(false);
+      }
+      return newRotation;
+    });
+  }, [isFlipped]);
   var handlePointerDown = useCallback(function (event) {
     var _ref$current;
     if (!draggable) return;
@@ -99,11 +144,9 @@ var useCardSpin = function useCardSpin(ref, rotationSpeed, draggable, hoverToSto
   }, [dragging, ref]);
   var handleClick = useCallback(function () {
     if (!dragging) {
-      setIsFlipped(function (prev) {
-        return !prev;
-      });
+      handleFlip();
     }
-  }, [dragging]);
+  }, [dragging, handleFlip]);
   useEffect(function () {
     var cardElement = ref.current;
     if (!cardElement) return function () {};
@@ -142,7 +185,7 @@ var CardSpin = function CardSpin(_ref) {
     _ref$rotationSpeed = _ref.rotationSpeed,
     rotationSpeed = _ref$rotationSpeed === void 0 ? 0 : _ref$rotationSpeed,
     _ref$draggable = _ref.draggable,
-    draggable = _ref$draggable === void 0 ? false : _ref$draggable,
+    draggable = _ref$draggable === void 0 ? true : _ref$draggable,
     _ref$hoverToStop = _ref.hoverToStop,
     hoverToStop = _ref$hoverToStop === void 0 ? false : _ref$hoverToStop,
     _ref$clickToFlip = _ref.clickToFlip,
@@ -156,8 +199,10 @@ var CardSpin = function CardSpin(_ref) {
     handlePointerMove = _useCardSpin.handlePointerMove,
     handlePointerUp = _useCardSpin.handlePointerUp;
   var style = {
-    width: width,
-    height: height,
+    minWidth: width,
+    maxWidth: width,
+    minHeight: height,
+    maxHeight: height,
     cursor: draggable ? dragging ? "grabbing" : "grab" : "pointer",
     userSelect: "none",
     willChange: "transform",
@@ -219,7 +264,8 @@ var Card3D = function Card3D(_ref) {
     rotationSpeed = _ref$rotationSpeed === void 0 ? 0 : _ref$rotationSpeed,
     _ref$hoverToStop = _ref.hoverToStop,
     hoverToStop = _ref$hoverToStop === void 0 ? false : _ref$hoverToStop,
-    mode = _ref.mode,
+    _ref$mode = _ref.mode,
+    mode = _ref$mode === void 0 ? "dragToFlip" : _ref$mode,
     leftColor = _ref.leftColor,
     rightColor = _ref.rightColor,
     _ref$borderColor = _ref.borderColor,
@@ -246,12 +292,12 @@ var Card3D = function Card3D(_ref) {
   };
   var leftSideStyle = {
     width: thickness + "px",
-    left: "-" + halfThickness + "px",
+    left: "-" + Math.floor(halfThickness) + "px",
     backgroundColor: borderStyle.colorLeft
   };
   var rightSideStyle = {
     width: thickness + "px",
-    right: "-" + halfThickness + "px",
+    right: "-" + Math.floor(halfThickness) + "px",
     backgroundColor: borderStyle.colorRight
   };
   return React.createElement("div", {
